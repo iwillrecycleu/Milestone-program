@@ -1,0 +1,41 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as scp
+
+#we are solving -(ℏ**2/2*mu).del**2ψ +[V-E]ψ=0
+#V=-(4/3*r)*αs+βr
+#ψ=R(nl)*Y(lm), where u(nl)=r*R(nl) satisfies:
+#d**2(u)/dr**2 - (l(l+1)/r**2)*(u) +2*mu(E-V)*u=0
+#u''=(l(l+1)/r**2)*u -2*mu*(E-V)*u
+
+me=9.11*10**-31
+mp=1.67*10**-27
+
+#Hydrogen assumptions: take mu=me, 4/3αs=α=1/137 and β=0
+#4/3α=1/137 => α=3/548
+
+mu=0.51099895
+def V(r,α,β):
+    return -(4/3)*α/r +β*r
+
+def EH(n):
+    return ((-13.6)*10**-6)/(n**2)
+
+EH1=-13.6*10**-6
+EH2=EH1/4
+def schro(y,r,E,n,l,m,α,β):
+    [u,dudr] = y
+    dydr = [dudr, ((l*(l+1))/r**2)*u - 2*m*(E-(V(r,α,β)))*u]
+    return dydr
+
+r1=np.linspace(10**-5,1500, 1000000)
+r2=np.linspace(10**-9,7000,10000)
+
+y0=[0,1]
+
+def solve(r,E,n,l,m,α,β):
+    return scp.odeint(schro,y0,r,args=(E,n,l,m,α,β))
+
+ground=solve(r1,EH1,1,0,mu,3/548,0)
+first0=solve(r2,EH2,2,0,mu,3/548,0)
+first1=solve(r2,EH2,2,1,mu,3/548,0)
