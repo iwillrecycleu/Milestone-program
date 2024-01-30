@@ -1,1 +1,2 @@
 # Milestone-program
+print("hello")
